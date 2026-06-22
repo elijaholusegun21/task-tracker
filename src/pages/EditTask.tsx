@@ -1,7 +1,8 @@
 import { useState } from "react";
 import {useNavigate,useParams,Link,} from "react-router-dom";
 import { useTasks } from "../hooks/UseTask";
-import type { TaskStatus } from "../types/Task";
+import type { TaskStatus,TaskPriority } from "../types/Task";
+import toast from "react-hot-toast";
 
 const EditTask = () => {
   const { id } = useParams();
@@ -31,6 +32,14 @@ const EditTask = () => {
       task?.status ?? "pending"
     );
 
+    const [dueDate, setDueDate] =
+  useState(task?.dueDate ?? "");
+
+    const [priority, setPriority] =
+  useState<TaskPriority>(
+    task?.priority ?? "medium"
+  );
+
   if (!task) {
     return (
       <div className="max-w-xl mx-auto px-4 py-20 text-center">
@@ -57,14 +66,23 @@ const EditTask = () => {
   ) => {
     e.preventDefault();
 
-    if (!title.trim()) return;
-
+    if (!title.trim()) {
+      toast.error(
+        "Task title is required"
+      );
+      return;
+    }
+    
     updateTask(
       task.id,
       title.trim(),
       description.trim(),
-      status
+      status,
+      priority,
+      dueDate
     );
+
+    toast.success("Task updated successfully!");
 
     navigate(`/task/${task.id}`);
   };
@@ -144,6 +162,49 @@ const EditTask = () => {
               Completed
             </option>
           </select>
+        </div>
+
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Priority
+          </label>
+
+          <select
+            value={priority}
+            onChange={(e) =>
+              setPriority(
+                e.target.value as TaskPriority
+              )
+            }
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="high">
+              🔴 High
+            </option>
+
+            <option value="medium">
+              🟡 Medium
+            </option>
+
+            <option value="low">
+              🟢 Low
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Due Date
+          </label>
+
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) =>
+              setDueDate(e.target.value)
+            }
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">

@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useReducer,
-  type ReactNode,
-} from "react";
-
+import {useEffect,useReducer,type ReactNode} from "react";
 import { TaskContext } from "./TaskContext";
 import { taskReducer } from "../reducer/TaskReducer";
 import type { Task } from "../types/Task";
@@ -64,7 +59,9 @@ export const TaskProvider = ({
   id: string,
   title: string,
   description: string,
-  status: Task["status"]
+  status: Task["status"],
+  priority: Task["priority"],
+  dueDate: string
 ) => {
   dispatch({
     type: "UPDATE_TASK",
@@ -73,6 +70,8 @@ export const TaskProvider = ({
       title,
       description,
       status,
+      priority,
+      dueDate 
     },
   });
 };

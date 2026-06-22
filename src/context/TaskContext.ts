@@ -14,11 +14,13 @@ export interface TaskContextType {
     id: string
   ) => void;
 
-   updateTask: (
+  updateTask: (
     id: string,
     title: string,
     description: string,
-    status: Task["status"]
+    status: Task["status"],
+    priority: Task["priority"],
+    dueDate: string
   ) => void;
 }
 

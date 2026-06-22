@@ -1,16 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import toast from "react-hot-toast";
 import { useTasks } from "../hooks/UseTask";
-import type { TaskStatus } from "../types/Task";
+import type {TaskStatus,TaskPriority,} from "../types/Task";
 
 const AddTask = () => {
   const navigate = useNavigate();
 
   const { addTask } = useTasks();
-
-  const titleInputRef =
-    useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState("");
 
@@ -20,11 +17,10 @@ const AddTask = () => {
   const [status, setStatus] =
     useState<TaskStatus>("pending");
 
-  const [error, setError] = useState("");
+  const [priority, setPriority] =
+    useState<TaskPriority>("medium");
 
-  useEffect(() => {
-    titleInputRef.current?.focus();
-  }, []);
+  const [dueDate, setDueDate] = useState("");
 
   const handleSubmit = (
     e: React.FormEvent
@@ -32,75 +28,60 @@ const AddTask = () => {
     e.preventDefault();
 
     if (!title.trim()) {
-      setError(
-        "Please enter a task title."
+      toast.error(
+        "Task title is required"
       );
       return;
     }
 
     addTask({
-      title: title.trim(),
-      description: description.trim(),
+      title,
+      description,
       status,
+      priority,
+      dueDate
     });
+
+    toast.success(
+      "Task created successfully"
+    );
 
     navigate("/");
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 sm:px-6 sm:py-10">
+    <div className="max-w-2xl mx-auto p-4 sm:p-6">
       <form
         onSubmit={handleSubmit}
-        className="space-y-6 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-8 shadow-sm"
+        className="space-y-5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6"
       >
-        {/* HEADER */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-bold">
             Add Task
           </h1>
 
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Create a new task and keep your
-            workflow organized.
+          <p className="text-sm text-slate-500 mt-1">
+            Create a new task and track
+            your progress.
           </p>
         </div>
 
-        {/* TITLE */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium">
-              Title
-            </label>
-
-            <span className="text-xs text-slate-500">
-              {title.length}/100
-            </span>
-          </div>
+          <label className="block mb-2 text-sm font-medium">
+            Title
+          </label>
 
           <input
-            ref={titleInputRef}
             type="text"
-            maxLength={100}
             value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-
-              if (error) {
-                setError("");
-              }
-            }}
+            onChange={(e) =>
+              setTitle(e.target.value)
+            }
             placeholder="Enter task title"
-            className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500"
           />
-
-          {error && (
-            <p className="mt-2 text-sm text-red-500">
-              {error}
-            </p>
-          )}
         </div>
 
-        {/* DESCRIPTION */}
         <div>
           <label className="block mb-2 text-sm font-medium">
             Description
@@ -115,11 +96,10 @@ const AddTask = () => {
             }
             rows={5}
             placeholder="Enter task description"
-            className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* STATUS */}
         <div>
           <label className="block mb-2 text-sm font-medium">
             Status
@@ -133,7 +113,7 @@ const AddTask = () => {
                   .value as TaskStatus
               )
             }
-            className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="pending">
               Pending
@@ -145,11 +125,53 @@ const AddTask = () => {
           </select>
         </div>
 
-        {/* BUTTON */}
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Priority
+          </label>
+
+          <select
+            value={priority}
+            onChange={(e) =>
+              setPriority(
+                e.target
+                  .value as TaskPriority
+              )
+            }
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="high">
+              🔴 High
+            </option>
+
+            <option value="medium">
+              🟡 Medium
+            </option>
+
+            <option value="low">
+              🟢 Low
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Due Date
+          </label>
+
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) =>
+              setDueDate(e.target.value)
+            }
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-transparent p-3 outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
         <button
           type="submit"
-          disabled={!title.trim()}
-          className="w-full rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 py-3 font-medium transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 py-3 font-medium transition hover:opacity-90"
         >
           Create Task
         </button>

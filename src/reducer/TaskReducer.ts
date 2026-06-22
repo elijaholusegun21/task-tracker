@@ -23,7 +23,9 @@ export type TaskAction =
         id: string;
         title: string;
         description: string;
+        dueDate: string;
         status: Task["status"];
+        priority: Task["priority"];
       };
     };
 
@@ -79,6 +81,10 @@ export const taskReducer = (
                   description:
                     action.payload.description,
                   status: action.payload.status,
+                  priority:
+                  action.payload.priority,
+                  dueDate: 
+                  action.payload.dueDate,
                 }
               : task
           ),

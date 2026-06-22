@@ -1,12 +1,8 @@
 import { useState } from "react";
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-
+import {Link,useNavigate,useParams,} from "react-router-dom";
 import DeleteModal from "../components/DeleteModal";
 import { useTasks } from "../hooks/UseTask";
+import toast from "react-hot-toast";
 
 const TaskDetails = () => {
   const { id } = useParams();
@@ -56,6 +52,8 @@ const TaskDetails = () => {
   const handleDelete = () => {
     deleteTask(task.id);
 
+    toast.success("Task deleted successfully!");
+    
     navigate("/");
   };
 
@@ -77,16 +75,29 @@ const TaskDetails = () => {
             </p>
           </div>
 
-          <span
-            className={`w-fit px-3 py-1 rounded-full text-sm font-medium ${
-              task.status ===
-              "completed"
-                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-            }`}
-          >
-            {task.status}
-          </span>
+          <div className="flex flex-wrap gap-2">
+            <span
+              className={`w-fit px-3 py-1 rounded-full text-sm font-medium ${
+                task.status === "completed"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                  : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
+              }`}
+            >
+              {task.status}
+            </span>
+
+            <span
+              className={`w-fit px-3 py-1 rounded-full text-sm font-medium ${
+                task.priority === "high"
+                  ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                  : task.priority === "medium"
+                  ? "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300"
+                  : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+              }`}
+            >
+              {task.priority.toUpperCase()} PRIORITY
+            </span>
+          </div>
         </div>
 
         {/* Description */}
@@ -103,12 +114,30 @@ const TaskDetails = () => {
           </div>
         </div>
 
+       <div className="mt-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+            Due Date
+          </h2>
+
+          <p className="mt-2 text-slate-700 dark:text-slate-300">
+            {task.dueDate
+              ? new Date(task.dueDate).toLocaleDateString()
+              : "No due date set"}
+          </p>
+        </div>
+
         {/* Actions */}
         <div className="mt-8 flex flex-col sm:flex-row gap-3">
           <button
-            onClick={() =>
-              toggleTaskStatus(task.id)
-            }
+            onClick={() => {
+              toggleTaskStatus(task.id);
+
+              toast.success(
+                task.status === "completed"
+                  ? "Task marked as pending"
+                  : "Task marked as completed"
+              );
+            }}
             className={`flex-1 py-3 rounded-xl font-medium transition ${
               task.status ===
               "completed"
